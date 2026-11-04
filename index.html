@@ -603,14 +603,14 @@ var GENRES_BY_ID = {
 
     var tm = isFilm ? (answers.time === 'Меньше 2 часов' ? 'short' : 'long') : (answers.time === 'Серия 30 минут' ? '30' : '60');
     var g = ids[isFilm ? 0 : 1];
-    var extra = { 'Весёлое': '35', 'Грустное': '18' }[answers.mood];
+    
     var rt = RUNTIME[answers.time];
     function url(genres) {
       return '/.netlify/functions/tmdb?type=' + (isFilm ? 'movie' : 'tv') + '&genres=' + genres +
              '&rmin=' + rt[0] + '&rmax=' + rt[1] + '&pop=' + popKind + (isFilm ? '&cert=' + CERT[age] : '');
     }
     var urls = [url(g)];
-    if (extra && extra !== g) { urls.unshift(url(g + ',' + extra)); }
+    
 
     return Promise.all(urls.map(function (u) {
       return fetch(u).then(function (r) { return r.json(); }).catch(function () { return { results: [] }; });
