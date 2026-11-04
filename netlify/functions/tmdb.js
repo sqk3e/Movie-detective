@@ -17,7 +17,7 @@ exports.handler = async (event) => {
       language: 'ru-RU',
       include_adult: 'false',
       sort_by: 'vote_count.desc',
-      with_genres: clean(q.genres),
+      with_genres: clean(q.genres).split(',').join('|'),
       'with_runtime.gte': clean(q.rmin) || '0',
       'with_runtime.lte': clean(q.rmax) || '400'
     });
