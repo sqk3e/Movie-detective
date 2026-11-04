@@ -745,9 +745,9 @@ DB.push({
     card.className = 'card';
     card.id = 'movieCard';
 
-    var ageBadge = m.age >= 18 ? '<span class="badge hot">18+</span>' : '<span class="badge">' + m.age + '+</span>';
-    var typeLabel = m.tp === 'film' ? 'Фильм' : 'Сериал';
-    var iconKey = m.icon || (m.tp === 'film' ? 'film' : 'series');
+    var ageBadge = m.src === 'tmdb' ? '' : (m.age >= 18 ? '<span class="badge hot">18+</span>' : '<span class="badge">' + m.age + '+</span>');
+var typeLabel = m.tp === 'film' ? 'Фильм' : 'Сериал';
+var iconKey = m.icon || (m.tp === 'film' ? 'film' : 'series');
     var posterSvg = SVG_ICONS[iconKey] || SVG_ICONS.film;
 
     card.innerHTML =
