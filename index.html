@@ -590,6 +590,7 @@ var GENRES_BY_ID = {
   }
 
   function loadTmdb() {
+    DB = DB.filter(function(x) { return x.src !== 'tmdb'; });
     var isFilm = answers.type === 'Фильм';
     var age = ageNum(answers.age);
     var ids = TMDB_GENRES[answers.genre];
@@ -942,7 +943,7 @@ var iconKey = m.icon || (m.tp === 'film' ? 'film' : 'series');
   }
 
   function reset() {
-    answers = {}; step = 0; currentMovie = null; shown = []; historyStack = []; historyIndex = -1;
+    answers = {}; step = 0;DB = DB.filter(function(x) { return x.src !== 'tmdb'; }); currentMovie = null; shown = []; historyStack = []; historyIndex = -1;
     show(true); render(); window.scrollTo(0, 0);
   }
 
