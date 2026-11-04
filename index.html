@@ -569,11 +569,17 @@
   // ===== TMDB: подгружаем фильмы из большой базы и добавляем их в нашу DB =====
   // Если TMDB не ответил, сайт всё равно работает на своей маленькой базе.
   var TMDB_GENRES = {   // жанр -> номера жанров TMDB: [для фильма, для сериала]
-    'Мультфильм': ['16', '16'], 'Комедия': ['35', '35'], 'Приключения': ['12', '10759'],
-    'Фэнтези': ['14', '10765'], 'Фантастика': ['878', '10765'], 'Детектив': ['9648', '9648'],
-    'Мелодрама': ['10749', '18'], 'Боевик': ['28', '10759'], 'Триллер': ['53', '9648'],
-    'Драма': ['18', '18'], 'Хоррор': ['27', '10765']
-  };
+  'Мультфильм': ['16', '16'], 'Комедия': ['35', '35'], 'Приключения': ['12', '10759'],
+  'Фэнтези': ['14', '10765'], 'Фантастика': ['878', '10765'], 'Детектив': ['9648', '9648'],
+  'Мелодрама': ['10749', '18'], 'Боевик': ['28', '10759'], 'Триллер': ['53', '9648'],
+  'Драма': ['18', '18'], 'Хоррор': ['27', '10765']
+};
+// НОВЫЙ СЛОВАРЬ ДЛЯ РАСШИФРОВКИ ЖАНРОВ ИЗ TMDB:
+var GENRES_BY_ID = {
+  16: 'Мультфильм', 35: 'Комедия', 12: 'Приключения', 14: 'Фэнтези',
+  878: 'Фантастика', 9648: 'Детектив', 10749: 'Мелодрама', 28: 'Боевик',
+  53: 'Триллер', 18: 'Драма', 27: 'Хоррор', 10759: 'Приключения', 10765: 'Фантастика'
+};
   var CERT = { 0: 'G', 6: 'PG', 12: 'PG-13', 16: 'R', 18: 'NC-17' };   // возраст -> рейтинг США
   var RUNTIME = { 'Меньше 2 часов': [0, 119], 'От 2 часов': [120, 400], 'Серия 30 минут': [0, 40], 'Серия 1 час': [41, 120] };
   var tmdbDone = {};
@@ -623,11 +629,25 @@
             return;
           }
           var date = m.release_date || m.first_air_date || '';
-          DB.push({
-            t: title, y: date.slice(0, 4) || '—', tp: isFilm ? 'film' : 'series', tm: tm, age: age,
-            r: (m.vote_average || 0).toFixed(1), g: [answers.genre], m: [answers.mood],
-            icon: isFilm ? 'film' : 'series', d: esc(m.overview), poster: m.poster_path, src: 'tmdb', pop: popKind
-          });
+          .// --- НАЧАЛО ФИКСА ---
+var realGenres = (m.genre_ids || []).map(function(id) { return GENRES_BY_ID[id]; }).filter(Boolean);
+if (realGenres.length === 0) { realGenres = [answers.genre]; } 
+
+var realAge = 12; 
+if (m.adult) {
+  realAge = 18;
+} else if (m.genre_ids && m.genre_ids.indexOf(27) !== -1) { 
+  realAge = 16;
+} else if (m.genre_ids && (m.genre_ids.indexOf(16) !== -1 || m.genre_ids.indexOf(10751) !== -1)) { 
+  realAge = 0;
+}
+
+DB.push({
+  t: title, y: date.slice(0, 4) || '—', tp: isFilm ? 'film' : 'series', tm: tm, age: realAge,
+  r: (m.vote_average || 0).toFixed(1), g: realGenres, m: [answers.mood],
+  icon: isFilm ? 'film' : 'series', d: esc(m.overview), poster: m.poster_path, src: 'tmdb', pop: popKind
+});
+// --- КОНЕЦ ФИКСА ---
         });
       });
       tmdbDone[key] = true;
