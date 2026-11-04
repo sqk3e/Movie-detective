@@ -508,8 +508,9 @@
              shown.indexOf(x.t) === -1;
     });
 
-    var byMood = pool.filter(function (x) { return x.m.indexOf(answers.mood) !== -1; });
-    return byMood.length ? byMood : pool;
+    var byPop = pool.filter(function(x) { return popOk(x); });
+var byMood = byPop.filter(function (x) { return x.m.indexOf(answers.mood) !== -1; });
+return byMood.length ? byMood : byPop;
   }
 
   function findMovie() {
@@ -645,7 +646,7 @@ if (m.adult) {
 DB.push({
   t: title, y: date.slice(0, 4) || '—', tp: isFilm ? 'film' : 'series', tm: tm, age: realAge,
   r: (m.vote_average || 0).toFixed(1), g: realGenres, m: [answers.mood],
-  icon: isFilm ? 'film' : 'series', d: esc(m.overview), poster: m.poster_path, src: 'tmdb', pop: popKind
+  icon: isFilm ? 'film' : 'series', d: esc(m.overview), poster: m.poster_path, src: 'tmdb', pop: (m.vote_count > 3000 ? 'hit' : 'gem')
 });
 // --- КОНЕЦ ФИКСА ---
         });
