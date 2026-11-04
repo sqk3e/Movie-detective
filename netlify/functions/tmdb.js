@@ -24,13 +24,14 @@ exports.handler = async (event) => {
     // «Известность»: хит = очень много оценок, жемчужина = хорошая оценка, но фильм знают немногие
     const k = type === 'tv' ? 0.4 : 1;
     params.set('vote_average.gte', q.pop === 'gem' ? '7.2' : '7');
-    if (q.pop === 'gem') {
-      params.set('sort_by', 'vote_average.desc');
-      params.set('vote_count.gte', String(Math.round(200 * k)));
-      params.set('vote_count.lte', String(Math.round(3000 * k)));
-    } else {
-      params.set('vote_count.gte', String(Math.round(3000 * k)));
-    }
+if (q.pop === 'gem') {
+  params.set('sort_by', 'vote_average.desc');
+  params.set('vote_count.gte', '200');
+  params.set('vote_count.lte', '2000');
+} else {
+  params.set('sort_by', 'popularity.desc');
+  params.set('vote_count.gte', '2000');
+};
     if (type === 'movie' && ['G', 'PG', 'PG-13', 'R', 'NC-17'].includes(q.cert)) {
       params.set('certification_country', 'US');
       params.set('certification.lte', q.cert);
